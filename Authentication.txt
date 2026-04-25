@@ -1,0 +1,77 @@
+package I_Assingment;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.time.Duration;
+
+public class Athentication {
+
+    WebDriver driver;
+    WebDriverWait wait;
+
+    @BeforeClass
+    public void setup() {
+
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("https://www.saucedemo.com/");
+
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    @Test(priority = 1)
+    public void testLoginAndLandingPage() {
+        // TC_01: Login with credentials
+        driver.findElement(By.id("user-name")).sendKeys("standard_user");
+        driver.findElement(By.id("password")).sendKeys("secret_sauce");
+        driver.findElement(By.id("login-button")).click();
+
+
+        WebElement header = driver.findElement(By.className("title"));
+        String headerText = header.getText();
+
+
+        Assert.assertEquals(headerText, "Products", "TC_01 Failed: Not on Products page!");
+
+        System.out.println("TC_01 Passed: Successfully navigated to the [ " + headerText + " ] page.");
+
+    }
+
+    @Test(priority = 2)
+    public void testHandleSecurityPopUp() {
+        // TC_02: Handle Security Pop-up / Alert
+        try {
+
+            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(3));
+            shortWait.until(ExpectedConditions.alertIsPresent());
+
+
+            driver.switchTo().alert().accept();
+            System.out.println("TC_02: Security Alert detected and dismissed.");
+        } catch (Exception e) {
+
+            System.out.println("TC_02: No security pop-up appeared. UI remains interactive.");
+        }
+
+        
+        boolean isPageActive = driver.findElement(By.id("inventory_container")).isDisplayed();
+        Assert.assertTrue(isPageActive, "TC_02 Failed: Page is not interactive after pop-up check.");
+        System.out.println("TC_02 Passed: Security handling complete.");
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
+
