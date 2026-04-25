@@ -1,2 +1,2 @@
-# https-www.saucedemo.com-testing
+# https-www.saucedemo.com
 https:/www.saucedemo.com testing
